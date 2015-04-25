@@ -1,0 +1,146 @@
+package SpaceInvaders;
+
+import java.util.ArrayList;
+
+import zen.core.Zen;
+
+
+public class MainGame {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		Zen.create(300, 600);
+		int score = 30;
+		int deathcounter = 1000 ;
+		boolean check = true;
+		boolean dead = false;
+		boolean win = false;
+		Player p = new Player(150, 500, 5, 20, 10);
+		ArrayList<Enemy> enemies = new ArrayList<Enemy>();
+
+		for (int i = 0; i < 5; i++)
+		{
+			Enemy e = new Enemy(i*50 + 5, 20, 2, 20, 20);
+			Enemy e1 = new Enemy(i*50 + 25, 70,2,20,20);
+			Enemy e2 = new Enemy(i*50 + 45 , 120,2,20,20);
+			Enemy e3 = new Enemy(i*50 + 15 , 170,2,20,20);
+			Enemy e4 = new Enemy(i*50 + 55 , 210,2,20,20);
+			Enemy e5 = new Enemy(i*50 + 65 , 250,2,20,20);
+			enemies.add(e);
+			enemies.add(e1);
+			enemies.add(e2);
+			enemies.add(e3);
+			enemies.add(e4);
+			enemies.add(e5);
+
+
+		}
+
+		while(true)
+		{
+			Zen.setBackground("black");
+			if(enemies.size() == 0){
+				win = true;
+			}
+			if (dead == false)
+			{
+				
+				p.draw();
+				p.move();
+				p.fire();
+			}
+			else
+			{
+				check = false;
+				Zen.setFont("arial", 40);
+				Zen.setColor("white");
+				Zen.drawText("GET", 100, 260);
+				Zen.drawText("REKT", 100, 300);
+				Zen.drawText("SON!", 100, 340);
+			}
+			loop: for (int i = 0; i < enemies.size(); i++) {
+				enemies.get(i).draw();
+				enemies.get(i).move();
+				enemies.get(i).fire();
+
+				if (dead == false)
+				{
+					for (int j = 0; j < p.pbs.size(); j++)
+					{
+						if (p.pbs.get(j).isTouching(enemies.get(i)))
+						{
+							score = score - 1;
+							enemies.remove(i);
+							p.pbs.remove(j);
+							break loop;
+
+
+						}
+						for (int k = 0; k < enemies.get(i).ebs.size(); k++)
+						{
+							if (enemies.get(i).ebs.get(k).isTouching(p))
+							{
+								dead = true;
+								enemies.get(i).ebs.remove(k);
+								break loop;
+
+							}
+							if (p.pbs.get(j).destroyBullets(enemies.get(i).ebs.get(k)))
+							{
+								
+								p.pbs.remove(j);
+								enemies.get(i).ebs.remove(k);
+								
+
+
+							}
+						}
+					}
+					for (int k = 0; k < enemies.get(i).ebs.size(); k++)
+					{
+						if (enemies.get(i).ebs.get(k).isTouching(p))
+						{
+							dead = true;
+							enemies.get(i).ebs.remove(k);
+							break loop;
+						}
+
+					}
+				}
+
+			}
+			
+			if(score >= 10){
+			Zen.setColor("white");
+			Zen.drawText("Enemies left: " + score, 20,570);
+			}
+			if(score < 10 && score >=5){
+			Zen.setColor("orange");
+			Zen.drawText("Enemies left: " + score, 20,570);
+			}
+			if(score < 5){
+			Zen.setColor("red");
+			Zen.drawText("Enemies left: " + score, 20,570);	
+			}
+			deathcounter = deathcounter - 1;
+			if(deathcounter <= 0){
+				dead = true;
+				check = false;
+			}
+			if(check == true){
+			Zen.setColor("white");
+			Zen.drawText("Death Counter:" + deathcounter, 150,570);
+			}
+			if(win == true){
+				Zen.setFont("arial",40);
+				Zen.drawText("Nice You actually won!!!", 100,260);
+				check = false;
+				deathcoutner = deathcounter + 1;
+			}
+			
+			Zen.buffer(30);
+		}
+	}
+
+}
+
